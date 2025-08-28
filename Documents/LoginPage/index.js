@@ -16,7 +16,7 @@ app.use(cors({ origin: "http://localhost:3001" }));
 databaseConnection();
 app.use("/api", router);
 app.get("/test", (req,res) => {
-  return res.send("Server is running")
+  return res.send("Server is running...")
 })
 
 app.listen(port, () => {
