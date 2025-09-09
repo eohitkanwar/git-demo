@@ -125,7 +125,9 @@ const ForgotPassword = async (req, res) => {
 
     if (IsUserExist) {
       const randomString = randomstring.generate();
-      EmailSend(IsUserExist.name, IsUserExist.email, randomString);
+      otpStore[email] = { otp, expires: Date.now() + 5 * 60 * 1000 };
+
+      EmailSend(IsUserExist.name, IsUserExist.email, randomString, otp);
 
       const userUpdate = await users.updateOne(
         { email: IsUserExist.email },
@@ -183,6 +185,7 @@ const EmailSend = async (name, email, token) => {
         console.log(error);
       } else {
         console.log("Mail Has Been Sent", info.response);
+        console.log("otp send to email");
       }
     });
   } catch (error) {
@@ -197,8 +200,9 @@ const EmailSend = async (name, email, token) => {
 const ResetPassword = async (req, res) => {
   try {
     const token = req.query.token;
+
     if (!token) {
-     return res.status(400).json({
+      return res.status(400).json({
         success: false,
         msg: "Token not available",
       });
@@ -214,7 +218,7 @@ const ResetPassword = async (req, res) => {
         { password: newPassword, token: "" },
         { new: true }
       );
-      console.log("Your Password Has Been Reset")
+      console.log("Your Password Has Been Reset");
       return res.status(200).json({
         success: true,
         msg: "Your Password Has Been Reset",
@@ -222,13 +226,14 @@ const ResetPassword = async (req, res) => {
       });
     } else {
       console.log("this link has been expired");
-      
-    return  res.status(400)
+
+      return res
+        .status(400)
         .json({ success: false, msg: "this link has been expired" });
     }
   } catch (error) {
     console.log("error", error);
-     return res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error?.message || "something went wrong",
     });
@@ -238,7 +243,7 @@ const ResetPassword = async (req, res) => {
 module.exports = {
   EmailSend,
   SignUpUser,
-  LoginUser,  
+  LoginUser,
   ForgotPassword,
   ResetPassword,
 };

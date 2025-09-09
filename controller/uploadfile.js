@@ -9,7 +9,7 @@ const uploadFile = (req, res) => {
   res.status(200).json({
     success: true,
     message: "✅ File uploaded successfully",
-    filePath: `http://localhost:8080/uploads/${req.file.filename}`,
+    filePath: `http://localhost:5000/uploads/${req.file.filename}`,
   });
 };
 
